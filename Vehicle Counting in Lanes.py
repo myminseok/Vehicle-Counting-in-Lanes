@@ -3,26 +3,27 @@ import cvzone
 import math
 import numpy as np
 from ultralytics import YOLO
+
 from sort import *
 
 # video_path = r'/Users/kminseok/_dev/tanzu-main/_experiments/video_analysis/carsvid.mp4'
 video_path = r'/Users/kminseok/_dev/tanzu-main/_experiments/video_analysis/video_2025-04-07-15-32-03.mp4'
 
 cap = cv2.VideoCapture(video_path)
-model = YOLO('yolo11m.pt')
+model = YOLO('yolov8m.pt')
 
 classnames = []
 with open('classes.txt', 'r') as f:
     classnames = f.read().splitlines()
 #road_zoneA = np.array([[0, 1], [2, 3], [4, 5], [6, 7], [8, 9]]
-road_zoneA = np.array([[30, 1050], [600, 1050], [600, 710], [30, 710], [30, 1050]], np.int32)
+road_zoneA = np.array([[30, 1050], [700, 1050], [700, 710], [30, 710], [30, 1050]], np.int32)
 zoneA_Line = np.array([road_zoneA[0],road_zoneA[1],road_zoneA[2],road_zoneA[3]]).reshape(-1)
 
 print (" zoneA_Line[0,1]",zoneA_Line[0], zoneA_Line[1], "zoneA_Line[2,3]:",zoneA_Line[2],zoneA_Line[3],"zoneA_Line[4,5]:",zoneA_Line[4],zoneA_Line[5],"zoneA_Line[6,7]:",zoneA_Line[6],zoneA_Line[7])
 
 tracker = Sort()
 zoneAcounter = []
-
+frameRate = 33
 while True:
     ret, frame = cap.read()
     frame = cv2.resize(frame, (1920,1080))
@@ -43,8 +44,7 @@ while True:
             cvzone.putTextRect(frame, f'{class_detect}', [x1 + 8, y1 - 12], thickness=2, scale=1)
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
-            if class_detect == 'car' or class_detect == 'truck' or class_detect == 'bus' \
-                    and conf > 100:
+            if class_detect == 'car' or class_detect == 'truck' or class_detect == 'bus' and conf > 60:
                 detections = np.array([x1,y1,x2,y2,conf])
                 current_detections = np.vstack([current_detections,detections])
 
@@ -64,10 +64,10 @@ while True:
                 zoneAcounter.append(id)
         cv2.circle(frame,(970,90),15,(0,0,255),-1)
 
-        cvzone.putTextRect(frame, f'LANE A Vehicles ={len(zoneAcounter)}', [1000, 99], thickness=4, scale=2.3, border=2)
+        cvzone.putTextRect(frame, f'LANE A Vehicles ={len(zoneAcounter)}', [50, 400], thickness=4, scale=2.3, border=2)
 
     cv2.imshow('frame', frame)
-    cv2.waitKey(1)
+    cv2.waitKey(60)
 
 cap.release()
 cv2.destroyAllWindows()
