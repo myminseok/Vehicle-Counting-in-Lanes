@@ -5,7 +5,8 @@ import numpy as np
 polygon_points = []
 
 # Read your video file
-video_path = r'C:\Users\Admin\Desktop\computervision videos/carsvid.mp4'
+#video_path = r'/Users/kminseok/_dev/tanzu-main/_experiments/video_analysis/carsvid.mp4'
+video_path = r'/Users/kminseok/_dev/tanzu-main/_experiments/video_analysis/video_2025-04-07-15-32-03.mp4'
 cap = cv2.VideoCapture(video_path)
 
 
